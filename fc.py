@@ -24,10 +24,12 @@ fullstep_seq = [
 
 # Function to move stepper motor
 def move_stepper(steps, delay=0.01):
-    for _ in range(steps):
+    step_count = abs(steps)
+    direction = 1 if steps > 0 else -1
+    for _ in range(step_count):
         for fullstep in range(4):
             for pin in range(4):
-                GPIO.output(STEPPER_PINS[pin], fullstep_seq[fullstep][pin])
+                GPIO.output(STEPPER_PINS[pin], fullstep_seq[fullstep][pin] if direction > 0 else fullstep_seq[3 - fullstep][pin])
             time.sleep(delay)
 
 path = 'person'
@@ -94,7 +96,7 @@ while True:
 
     # Check if the door should be closed after 5 seconds
     if door_open_time and time.time() - door_open_time > 5:
-        move_stepper(900)  # Move stepper motor to close the door
+        move_stepper(-900)  # Move stepper motor to close the door
         door_closed = True
         door_open_time = None
     
